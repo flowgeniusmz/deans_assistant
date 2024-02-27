@@ -124,7 +124,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
                     citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
             thread_message_content_replace += '\n' + '\n\n' + '**Citations:**' + '\n' + '\n'.join(citations)
             #print(thread_message_content_replace)
-            add_thread_message = {"role": thread_message_role, "content": thread_message_content}
+            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace}
             st.session_state.messages.append(add_thread_message)
             with chat_container:
                 #with st.chat_message(thread_message_role):
