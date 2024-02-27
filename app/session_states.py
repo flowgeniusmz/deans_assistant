@@ -26,14 +26,14 @@ def get_initial_session_states():
         )
         st.session_state.thread_id = st.session_state.thread.id
     if "start_chat" not in st.session_state:
-        st.session_state.start_chat = False
+        st.session_state.start_chat = True
     if "file_id_list" not in st.session_state:
         st.session_state.file_id_list = []
     if "ignore_file_ids" not in st.session_state:
         st.session_state.ignore_file_ids = True
     if "run" not in st.session_state:
         st.session_state.run = {"status": None}
-        st.session_state.run_instructions = "Please answer the query or input using the instructions and files you have been given. If you cant find the appropriate information, say you don't know."
+        st.session_state.run_instructions = "Please answer the query or input using the instructions and files you have been given. If you cant find the appropriate information, say you don't know. Always include citations where possible."
     if "messages" not in st.session_state:
         st.session_state.messages = [st.session_state.initial_message]
     if "retry_error" not in st.session_state:

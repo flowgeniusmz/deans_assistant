@@ -17,6 +17,9 @@ df_files1 = pd.DataFrame(
 df_tools = pd.DataFrame(
     columns=["Type"]
 )
+df_messages = pd.DataFrame(
+    columns=["Role", "Content", "Thread Id", "Message Id"]
+)
 def download_file_link(file_contents, file_name, link_text):
     b64 = base64.b64encode(file_contents.encode()).decode()
     return f'<a href="data:file/txt;base64,{b64}" download="{file_name}">{link_text}</a>'
@@ -86,8 +89,8 @@ with main_container:
         )
     tabs_container = st.container(border=True)
     with tabs_container:
-        tab_names = ['Files', 'Tools', 'File Download']
-        tab1, tab2, tab3 = st.tabs(tab_names)
+        tab_names = ['Files', 'Tools', 'File Download', 'Message Log']
+        tab1, tab2, tab3, tab4 = st.tabs(tab_names)
         with tab1:
             for file_id in st.session_state.assistant_file_ids:
                 file_object = client.beta.assistants.files.retrieve(
@@ -133,3 +136,12 @@ with main_container:
                 }
                 df_files1 = df_files1._append(new_row_files1, ignore_index=True)
             st.dataframe(df_files1, use_container_width=True)
+        with tab4:
+            for msg in st.session_state.messages:
+                new_row_messages = {
+                    "Role": msg['role'],
+                    "Content": msg['content'],
+                    "Thread Id": st.session_state.thread_id
+                }
+                df_messages = df_messages._append(new_row_messages, ignore_index=True)
+            st.dataframe(df_messages, use_container_width=True)

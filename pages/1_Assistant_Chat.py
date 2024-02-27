@@ -1,10 +1,13 @@
 # 0. Import Libraries
 import streamlit as st
 from config import pagesetup as ps, toastalerts as ta
-from app import display_title as disTitle
+from app import display_title as disTitle, session_states as ss
 from openai import OpenAI
 import time
 
+if "start_chat" not in st.session_state:
+    ss.get_initial_session_states()
+    
 # 0. Set Instances
 client = OpenAI(api_key=st.secrets.openai.api_key)
 
@@ -123,6 +126,8 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
                     cited_file = client.files.retrieve(file_path.file_id)
                     citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
             thread_message_content_replace += '\n' + '\n\n' + '**Citations:**' + '\n' + '\n'.join(citations)
+            print(thread_message_content)
+            print(thread_message_content_replace)
             #print(thread_message_content_replace)
             add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace}
             st.session_state.messages.append(add_thread_message)
