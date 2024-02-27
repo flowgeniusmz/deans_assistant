@@ -40,12 +40,15 @@ ps.set_page_overview(
     varText=overview_text
 )
 
+
 # 2. Display Existing Messages in teh chat
-for message in st.session_state.messages:
-    message_role = message["role"]
-    message_content = message["content"]
-    with st.chat_message(message_role):
-        st.markdown(message_content)
+chat_container = st.container(border=True, height=300)
+with chat_container:
+    for message in st.session_state.messages:
+        message_role = message["role"]
+        message_content = message["content"]
+        with st.chat_message(message_role):
+            st.markdown(message_content)
 
 # 3. Chat Input for the user
 if prompt := st.chat_input("Enter your question (Ex: A student has their third tardy. What consequences should be considered?)"):
@@ -55,14 +58,21 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
     prompt_message = {"role": prompt_role, "content": prompt_content}
     st.session_state.messages.append(prompt_message)
     # display message
-    with st.chat_message(prompt_role):
-        st.markdown(prompt_content)
+    with chat_container:
+        with st.chat_message(prompt_role):
+            st.markdown(prompt_content)
     #add message to existing thread
     new_message = client.beta.threads.messages.create(
         thread_id=st.session_state.thread_id,
         content=prompt_content,
         role=prompt_role
     )
+    with chat_container:
+        status = st.status(
+            label="Initiating response...",
+            expanded=False,
+            state="running"
+        )
     # Create a run with additional instructions
     st.session_state.run = client.beta.threads.runs.create(
         thread_id=st.session_state.thread_id,
@@ -77,7 +87,15 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             thread_id=st.session_state.thread_id,
             run_id=st.session_state.run.id
         )
+        with chat_container:
+            status.write(f"Checking response status...{st.session_state.run.status}")
 
+    with chat_container:
+        status.update(
+            label="Response recieved!",
+            expanded=False,
+            state="complete"
+        )
     # retrieve messages added by assistant
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id
@@ -91,5 +109,6 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             thread_message_content = thread_message.content[0].text.value
             add_thread_message = {"role": thread_message_role, "content": thread_message_content}
             st.session_state.messages.append(add_thread_message)
-            with st.chat_message(thread_message_role):
-                st.markdown(thread_message_content)
+            with chat_container:
+                with st.chat_message(thread_message_role):
+                    st.markdown(thread_message_content)
