@@ -1,6 +1,6 @@
 # 0. Import Libraries
 import streamlit as st
-from config import pagesetup as ps
+from config import pagesetup as ps, toastalerts as ta
 from app import display_title as disTitle
 from openai import OpenAI
 import time
@@ -52,6 +52,7 @@ with chat_container:
 
 # 3. Chat Input for the user
 if prompt := st.chat_input("Enter your question (Ex: A student has their third tardy. What consequences should be considered?)"):
+    ta.toast_alert_start("Getting response...")
     # add to st.session_state.messages
     prompt_role = "user"
     prompt_content = prompt
@@ -82,7 +83,8 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
 
     # Wait for run to complete
     while st.session_state.run.status != "completed":
-        time.sleep(1)
+        time.sleep(2)
+        ta.toast_alert_waiting("Awaiting response...")
         st.session_state.run = client.beta.threads.runs.retrieve(
             thread_id=st.session_state.thread_id,
             run_id=st.session_state.run.id
@@ -96,6 +98,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             expanded=False,
             state="complete"
         )
+    ta.toast_alert_end("Response recieved!")
     # retrieve messages added by assistant
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id
