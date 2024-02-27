@@ -42,7 +42,7 @@ ps.set_page_overview(
 
 
 # 2. Display Existing Messages in teh chat
-chat_container = st.container(border=True, height=300)
+chat_container = st.container(border=True, height=350)
 with chat_container:
     for message in st.session_state.messages:
         message_role = message["role"]
@@ -109,9 +109,25 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         thread_message_run_id = thread_message.run_id
         thread_message_role = thread_message.role
         if thread_message_run_id == st.session_state.run.id and thread_message_role == "assistant":
+            thread_message_text = thread_message.content[0].text
+            thread_message_annotations = thread_message_text.annotations
+            citations=[]
             thread_message_content = thread_message.content[0].text.value
+            thread_message_content_replace = thread_message_content
+            for index, annotation in enumerate(thread_message_annotations):
+                thread_message_content_replace = thread_message_content_replace.replace(annotation.text, f' [{index}]')
+                if (file_citation:=getattr(annotation, 'file_citation', None)):
+                    cited_file = client.files.retrieve(file_citation.file_id)
+                    citations.append(f'[{index}] {file_citation.quote} from {cited_file.filename}')
+                elif (file_path := getattr(annotation, 'file_path', None)):
+                    cited_file = client.files.retrieve(file_path.file_id)
+                    citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
+            thread_message_content_replace += '\n' + '\n\n' + '**Citations:**' + '\n' + '\n'.join(citations)
+            #print(thread_message_content_replace)
             add_thread_message = {"role": thread_message_role, "content": thread_message_content}
             st.session_state.messages.append(add_thread_message)
             with chat_container:
-                with st.chat_message(thread_message_role):
-                    st.markdown(thread_message_content)
+                #with st.chat_message(thread_message_role):
+                #    st.markdown(thread_message_content)
+                with st.chat_message("assistant"):
+                    st.markdown(thread_message_content_replace)
