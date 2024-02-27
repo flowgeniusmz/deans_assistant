@@ -8,7 +8,7 @@ def get_initial_session_states():
         st.session_state.session_id = str(uuid.uuid4())
     if "school_name" not in st.session_state:
         st.session_state.school_name = "John F Kennedy Middle School"
-        st.session_state.initial_message = {"role": "assistant", "content": f"Welcome to {st.session_state.school_name}! I am your AI assistant - how may I help you?"}
+        st.session_state.initial_message = {"role": "assistant", "content": f"Welcome to {st.session_state.school_name}! I am your AI assistant - how may I help you?", "messageid": "0", "runid": "0"}
     if "openai_client" not in st.session_state:
         st.session_state.openai_client = OpenAI(api_key=st.secrets.openai.api_key)
         st.session_state.openai_model = st.secrets.openai.model_gpt4_preview

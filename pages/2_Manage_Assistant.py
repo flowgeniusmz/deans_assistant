@@ -18,7 +18,7 @@ df_tools = pd.DataFrame(
     columns=["Type"]
 )
 df_messages = pd.DataFrame(
-    columns=["Role", "Content", "Thread Id", "Message Id"]
+    columns=["Role", "Content", "Thread Id", "Message Id", "Run Id"]
 )
 def download_file_link(file_contents, file_name, link_text):
     b64 = base64.b64encode(file_contents.encode()).decode()
@@ -141,7 +141,9 @@ with main_container:
                 new_row_messages = {
                     "Role": msg['role'],
                     "Content": msg['content'],
-                    "Thread Id": st.session_state.thread_id
+                    "Thread Id": st.session_state.thread_id,
+                    "Message Id": msg['messageid'],
+                    "Run Id": msg['runid']
                 }
                 df_messages = df_messages._append(new_row_messages, ignore_index=True)
             st.dataframe(df_messages, use_container_width=True)

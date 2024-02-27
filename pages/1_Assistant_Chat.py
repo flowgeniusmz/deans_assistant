@@ -7,7 +7,7 @@ import time
 
 if "start_chat" not in st.session_state:
     ss.get_initial_session_states()
-    
+
 # 0. Set Instances
 client = OpenAI(api_key=st.secrets.openai.api_key)
 
@@ -59,18 +59,23 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
     # add to st.session_state.messages
     prompt_role = "user"
     prompt_content = prompt
-    prompt_message = {"role": prompt_role, "content": prompt_content}
-    st.session_state.messages.append(prompt_message)
-    # display message
-    with chat_container:
-        with st.chat_message(prompt_role):
-            st.markdown(prompt_content)
-    #add message to existing thread
     new_message = client.beta.threads.messages.create(
         thread_id=st.session_state.thread_id,
         content=prompt_content,
         role=prompt_role
     )
+    #prompt_message = {"role": prompt_role, "content": prompt_content, "messageid": new_message.id}
+    #st.session_state.messages.append(prompt_message)
+    # display message
+    with chat_container:
+        with st.chat_message(prompt_role):
+            st.markdown(prompt_content)
+    #add message to existing thread
+    #new_message = client.beta.threads.messages.create(
+    #    thread_id=st.session_state.thread_id,
+    #    content=prompt_content,
+    #    role=prompt_role
+    #)
     with chat_container:
         status = st.status(
             label="Initiating response...",
@@ -83,6 +88,10 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         assistant_id=st.secrets.openai.assistant_id,
         instructions=st.session_state.run_instructions
     )
+
+    # Add to session state
+    prompt_message = {"role": prompt_role, "content": prompt_content, "messageid": new_message.id, "runid": st.session_state.run.id}
+    st.session_state.messages.append(prompt_message)
 
     # Wait for run to complete
     while st.session_state.run.status != "completed":
@@ -112,6 +121,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         thread_message_run_id = thread_message.run_id
         thread_message_role = thread_message.role
         if thread_message_run_id == st.session_state.run.id and thread_message_role == "assistant":
+            thread_message_id = thread_message.id
             thread_message_text = thread_message.content[0].text
             thread_message_annotations = thread_message_text.annotations
             citations=[]
@@ -129,7 +139,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             print(thread_message_content)
             print(thread_message_content_replace)
             #print(thread_message_content_replace)
-            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace}
+            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace, "messageid": thread_message_id, "runid": thread_message_run_id}
             st.session_state.messages.append(add_thread_message)
             with chat_container:
                 #with st.chat_message(thread_message_role):
