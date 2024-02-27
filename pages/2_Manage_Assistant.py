@@ -4,15 +4,23 @@ from config import pagesetup as ps
 from app import display_title as disTitle
 from openai import OpenAI
 import pandas as pd
+import base64
 
 # Set Instances
 client = OpenAI(api_key=st.secrets.openai.api_key)
 df_files = pd.DataFrame(
     columns=["File Id", "Object Type", "Created At", "Assistant Id"]
 )
+df_files1 = pd.DataFrame(
+    columns=["Id", "Object", "Bytes", "Created At", "Name", "Purpose", "Download Link"]
+)
 df_tools = pd.DataFrame(
     columns=["Type"]
 )
+def download_file_link(file_contents, file_name, link_text):
+    b64 = base64.b64encode(file_contents.encode()).decode()
+    return f'<a href="data:file/txt;base64,{b64}" download="{file_name}">{link_text}</a>'
+
 
 # 1. Page Setup
 ## (Page Information)
@@ -78,8 +86,8 @@ with main_container:
         )
     tabs_container = st.container(border=True)
     with tabs_container:
-        tab_names = ['Files', 'Tools']
-        tab1, tab2 = st.tabs(tab_names)
+        tab_names = ['Files', 'Tools', 'File Download']
+        tab1, tab2, tab3 = st.tabs(tab_names)
         with tab1:
             for file_id in st.session_state.assistant_file_ids:
                 file_object = client.beta.assistants.files.retrieve(
@@ -101,3 +109,27 @@ with main_container:
                 }
                 df_tools = df_tools._append(new_row_tools, ignore_index=True)
             st.dataframe(df_tools, use_container_width=True)
+        with tab3:
+            for file_id in st.session_state.assistant_file_ids:
+                file_object1 = client.files.retrieve(
+                    file_id=file_id
+                )
+                #file_contents = client.files.content(
+                    #file_id=file_id
+                #)
+                #file_link = download_file_link(
+                #    file_contents=file_contents,
+                #    file_name=file_object1.filename,
+                #    link_text="Download Link"
+                #)
+                new_row_files1 = {
+                    "Id": file_object1.id,
+                    "Object": file_object1.object,
+                    "Bytes": file_object1.bytes,
+                    "Created At": file_object1.created_at,
+                    "Name": file_object1.filename ,
+                    "Purpose": file_object1.purpose,
+                    #"Download Link": file_link
+                }
+                df_files1 = df_files1._append(new_row_files1, ignore_index=True)
+            st.dataframe(df_files1, use_container_width=True)

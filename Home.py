@@ -14,7 +14,7 @@ page_subtitle = "Home"
 page_icon = "🎓"
 page_description = "Allows school administration to quickly get information and insight."
 overview_header = "Overview"
-overview_text = f"**{page_subtitle}** {page_description.lower()}"
+overview_text = f"**{page_title}** {page_description.lower()}"
 
 ## (Set Page Config)
 st.set_page_config(
