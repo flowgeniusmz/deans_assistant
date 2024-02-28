@@ -33,6 +33,8 @@ def get_initial_session_states():
         st.session_state.thread_id = st.session_state.thread.id
     if "start_chat" not in st.session_state:
         st.session_state.start_chat = True
+    if "manage_assistant_accessed" not in st.session_state:
+        st.session_state.manage_assistant_accessed = False
     if "file_id_list" not in st.session_state:
         st.session_state.file_id_list = []
     if "ignore_file_ids" not in st.session_state:
