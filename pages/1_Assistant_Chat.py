@@ -4,6 +4,7 @@ from config import pagesetup as ps, toastalerts as ta
 from app import display_title as disTitle, session_states as ss
 from openai import OpenAI
 import time
+from datetime import datetime
 
 if "start_chat" not in st.session_state:
     ss.get_initial_session_states()
@@ -38,14 +39,21 @@ disTitle.display_title_section(
 )
 
 ## (Set Page Overview)
-ps.set_page_overview(
-    varHeader=overview_header,
-    varText=overview_text
-)
+#ps.set_page_overview(
+#    varHeader=overview_header,
+#    varText=overview_text
+#)
 
-
+##########################################################################
+# Instructions
+# - Create a container for the chat messages using border and fixed height
+# - Need to display existing messages in st.session_state.messages using "With St.Chat_Message(Role): st.Markdown(content)"
+# - Next is input - outside of the chat container
+#
+#
+#
 # 2. Display Existing Messages in teh chat
-chat_container = st.container(border=True, height=350)
+chat_container = st.container(border=True, height=450)
 with chat_container:
     for message in st.session_state.messages:
         message_role = message["role"]
@@ -54,7 +62,7 @@ with chat_container:
             st.markdown(message_content)
 
 # 3. Chat Input for the user
-if prompt := st.chat_input("Enter your question (Ex: A student has their third tardy. What consequences should be considered?)"):
+if prompt := st.chat_input("Enter your question (Ex: A student has their third tardy. What consequences should be considered?)", ):
     ta.toast_alert_start("Getting response...")
     # add to st.session_state.messages
     prompt_role = "user"
@@ -90,12 +98,12 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
     )
 
     # Add to session state
-    prompt_message = {"role": prompt_role, "content": prompt_content, "messageid": new_message.id, "runid": st.session_state.run.id}
+    prompt_message = {"role": prompt_role, "content": prompt_content, "messageid": new_message.id, "runid": st.session_state.run.id, "createdatunix": new_message.created_at, "createdatdatetime": datetime.utcfromtimestamp(new_message.created_at)}
     st.session_state.messages.append(prompt_message)
 
     # Wait for run to complete
     while st.session_state.run.status != "completed":
-        time.sleep(2)
+        time.sleep(3)
         ta.toast_alert_waiting("Awaiting response...")
         st.session_state.run = client.beta.threads.runs.retrieve(
             thread_id=st.session_state.thread_id,
@@ -122,6 +130,8 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         thread_message_role = thread_message.role
         if thread_message_run_id == st.session_state.run.id and thread_message_role == "assistant":
             thread_message_id = thread_message.id
+            thread_message_unix = thread_message.created_at
+            thread_message_datetime = datetime.utcfromtimestamp(thread_message_unix)
             thread_message_text = thread_message.content[0].text
             thread_message_annotations = thread_message_text.annotations
             citations=[]
@@ -139,7 +149,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             print(thread_message_content)
             print(thread_message_content_replace)
             #print(thread_message_content_replace)
-            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace, "messageid": thread_message_id, "runid": thread_message_run_id}
+            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace, "messageid": thread_message_id, "runid": thread_message_run_id, "createdatunix": thread_message_unix, "createdatdatetime": thread_message_datetime}
             st.session_state.messages.append(add_thread_message)
             with chat_container:
                 #with st.chat_message(thread_message_role):

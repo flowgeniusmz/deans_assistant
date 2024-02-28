@@ -1,14 +1,20 @@
 import streamlit as st
 import uuid
 from openai import OpenAI
+import pandas as pd
+from datetime import datetime
+import time
 
 
 def get_initial_session_states():
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
+    if "start_datetime" not in st.session_state:
+        st.session_state.start_datetime = datetime.now()
+        st.session_state.start_unixtime = int(time.mktime(st.session_state.start_datetime.timetuple()))
     if "school_name" not in st.session_state:
         st.session_state.school_name = "John F Kennedy Middle School"
-        st.session_state.initial_message = {"role": "assistant", "content": f"Welcome to {st.session_state.school_name}! I am your AI assistant - how may I help you?", "messageid": "0", "runid": "0"}
+        st.session_state.initial_message = {"role": "assistant", "content": f"Welcome to {st.session_state.school_name}! I am your AI assistant - how may I help you?", "messageid": "0", "runid": "0", "createdatunix": st.session_state.start_unixtime, "createdatdatetime": st.session_state.start_datetime}
     if "openai_client" not in st.session_state:
         st.session_state.openai_client = OpenAI(api_key=st.secrets.openai.api_key)
         st.session_state.openai_model = st.secrets.openai.model_gpt4_preview
@@ -38,3 +44,12 @@ def get_initial_session_states():
         st.session_state.messages = [st.session_state.initial_message]
     if "retry_error" not in st.session_state:
         st.session_state.retry_error = 0
+    if "dataframe_files" not in st.session_state:
+        st.session_state.dataframe_files = pd.DataFrame(columns=["File Id", "Object Type", "Created At", "Assistant Id"])
+    if "dataframe_files1" not in st.session_state:
+        st.session_state.dataframe_files1 = pd.DataFrame(columns=["Id", "Object", "Bytes", "Created At", "Name", "Purpose", "Download Link"])
+    if "dataframe_tools" not in st.session_state:
+        st.session_state.dataframe_tools = pd.DataFrame(columns=["Type"])
+    if "dataframe_messages" not in st.session_state:
+        st.session_state.dataframe_messages = pd.DataFrame(columns=["Role", "Content", "Thread Id", "Message Id", "Run Id", "Session Id", "Created At Unix", "Created At Datetime"])
+

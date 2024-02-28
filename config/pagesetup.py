@@ -7,20 +7,20 @@ from streamlit_extras.metric_cards import style_metric_cards
 
 ## 1. TITLE and SUBTITLE
 def set_title(varTitle, varSubtitle):
-        st.markdown(f"""<span style="font-weight: bold; font-size: 2em; color:#00b084;">{varTitle} </span> <span style="font-weight: bold; color:#0096D7; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
+        st.markdown(f"""<span style="font-weight: bold; font-size: 2em; color:#4A90E2;">{varTitle} </span> <span style="font-weight: bold; color:#333333; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
         st.divider()
 
 def set_title_nodiv(varTitle, varSubtitle):
-        st.markdown(f"""<span style="font-weight: bold; font-size: 2em; color:#00b084;">{varTitle} </span> <span style="font-weight: bold; color:#0096D7; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
+        st.markdown(f"""<span style="font-weight: bold; font-size: 2em; color:#4A90E2;">{varTitle} </span> <span style="font-weight: bold; color:#333333; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
 
 
 ### 2.  Wording
 def set_blue_header(varSubtitle):
-    st.markdown(f"""<span style="font-weight: bold; color:#0096D7; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
+    st.markdown(f"""<span style="font-weight: bold; color:#4A90E2; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
     
 
-def set_green_header(varSubtitle):
-    st.markdown(f"""<span style="font-weight: bold; color:#00b084; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
+def set_gray_header(varSubtitle):
+    st.markdown(f"""<span style="font-weight: bold; color:#333333; font-size:1.3em;">{varSubtitle}</span>""", unsafe_allow_html=True)
 
 ### PAGE LINKS ####
 

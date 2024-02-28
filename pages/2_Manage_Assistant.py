@@ -5,6 +5,9 @@ from app import display_title as disTitle
 from openai import OpenAI
 import pandas as pd
 import base64
+from datetime import datetime
+import time
+import csv
 
 # Set Instances
 client = OpenAI(api_key=st.secrets.openai.api_key)
@@ -18,8 +21,9 @@ df_tools = pd.DataFrame(
     columns=["Type"]
 )
 df_messages = pd.DataFrame(
-    columns=["Role", "Content", "Thread Id", "Message Id", "Run Id"]
+    columns=["Role", "Content", "Thread Id", "Message Id", "Run Id", "Session Id", "Created At Unix", "Created At Datetime"]
 )
+
 def download_file_link(file_contents, file_name, link_text):
     b64 = base64.b64encode(file_contents.encode()).decode()
     return f'<a href="data:file/txt;base64,{b64}" download="{file_name}">{link_text}</a>'
@@ -60,6 +64,7 @@ ps.set_page_overview(
 # 2. Display
 main_container = st.container(border=True)
 with main_container:
+    ps.set_blue_header(varSubtitle="Basic Information")
     details_container = st.container()
     with details_container:
         cc_details = st.columns(3)
@@ -87,10 +92,11 @@ with main_container:
             disabled=True,
             height=400 
         )
+    ps.set_blue_header(varSubtitle="Details and Actions")
     tabs_container = st.container(border=True)
     with tabs_container:
-        tab_names = ['Files', 'Tools', 'File Download', 'Message Log']
-        tab1, tab2, tab3, tab4 = st.tabs(tab_names)
+        tab_names = ['Files', 'Tools', 'File Download', 'Message Log', 'Add Assistant File']
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(tab_names)
         with tab1:
             for file_id in st.session_state.assistant_file_ids:
                 file_object = client.beta.assistants.files.retrieve(
@@ -104,6 +110,7 @@ with main_container:
                     "Assistant Id": file_object.assistant_id
                 }
                 df_files = df_files._append(new_row_files, ignore_index=True)
+                st.session_state.dataframe_files = st.session_state.dataframe_files._append(new_row_files, ignore_index=True)
             st.dataframe(df_files, use_container_width=True)
         with tab2:
             for tool in st.session_state.assistant_tools:
@@ -111,6 +118,7 @@ with main_container:
                     "Type": tool.type
                 }
                 df_tools = df_tools._append(new_row_tools, ignore_index=True)
+                st.session_state.dataframe_tools = st.session_state.dataframe_tools._append(new_row_tools, ignore_index=True)
             st.dataframe(df_tools, use_container_width=True)
         with tab3:
             for file_id in st.session_state.assistant_file_ids:
@@ -135,6 +143,7 @@ with main_container:
                     #"Download Link": file_link
                 }
                 df_files1 = df_files1._append(new_row_files1, ignore_index=True)
+                st.session_state.dataframe_files1 = st.session_state.dataframe_files1._append(new_row_files1, ignore_index=True)
             st.dataframe(df_files1, use_container_width=True)
         with tab4:
             for msg in st.session_state.messages:
@@ -143,7 +152,33 @@ with main_container:
                     "Content": msg['content'],
                     "Thread Id": st.session_state.thread_id,
                     "Message Id": msg['messageid'],
-                    "Run Id": msg['runid']
+                    "Run Id": msg['runid'],
+                    "Session Id": st.session_state.session_id,
+                    "Created At Unix": msg['createdatunix'],
+                    "Created At Datetime": msg['createdatdatetime']
                 }
+                df_temp = pd.DataFrame([new_row_messages])
+                df_temp.to_csv('data/message_log.csv', mode='a', index=False, header=False)
+                df_temp = pd.DataFrame(columns=df_temp.columns)
                 df_messages = df_messages._append(new_row_messages, ignore_index=True)
+                st.session_state.dataframe_messages = st.session_state.dataframe_messages._append(new_row_messages, ignore_index=True)
             st.dataframe(df_messages, use_container_width=True)
+        with tab5:
+            uploaded_file = st.file_uploader(
+                label="Upload additional assistant file"
+            )
+            if uploaded_file:
+                new_asst_file = client.files.create(
+                    file=uploaded_file,
+                    purpose="assistants"
+                )
+                new_asst_file_id = new_asst_file.id
+                add_file_to_asst_response = client.beta.assistants.files.create(
+                    file_id=new_asst_file_id,
+                    assistant_id=st.session_state.assistant.id
+                )
+                check_id = add_file_to_asst_response.id
+                if check_id:
+                    st.success(body="File has been added!")
+                else:
+                    st.error(body="File was not uploaded. Please try again.")
