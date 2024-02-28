@@ -1,11 +1,12 @@
 # 0. Import Libraries
 import streamlit as st
 from config import pagesetup as ps, toastalerts as ta
-from app import display_title as disTitle, session_states as ss
+from app import display_title as disTitle, session_states as ss, display_chat_history1 as disChat
 from openai import OpenAI
 import time
 from datetime import datetime
 import pandas as pd
+
 
 
 if "start_chat" not in st.session_state:
@@ -42,34 +43,6 @@ disTitle.display_title_section(
 
 ## (Set Overview)
 ps.set_page_overview(varHeader=overview_header, varText=overview_text)
+ps.set_blue_header("Chat History")
 
-# filter out runid = 0
-dataframe_messages_filtered = st.session_state.dataframe_messages[st.session_state.dataframe_messages['Run Id'] != '0']
-
-# group messages df
-dataframe_messages_grouped = dataframe_messages_filtered.groupby('Run Id')
-
-# iterate over each run
-for run_id, group in dataframe_messages_grouped:
-    run_container = st.container(border=True)
-    with run_container:
-        input_runid = st.text_input(
-            label="Run Id",
-            value=run_id,
-            disabled=True
-        )
-        #filter for user and assistant
-        user_msgs = group[group['Role'] == 'user']['Content']
-        assistant_msgs = group[group['Role'] == 'assistant']['Content']
-
-        cc = st.columns(2)
-        with cc[0]:
-            exp_user = st.expander(label="User Messages", expanded=False)
-            with exp_user:
-                for msg in user_msgs:
-                    st.markdown(msg)
-        with cc[1]:
-            exp_asst = st.expander(label="Assistant Messages", expanded=False)
-            with exp_asst:
-                for msg in assistant_msgs:
-                    st.markdown(msg)
+disChat.chat_history_display()
