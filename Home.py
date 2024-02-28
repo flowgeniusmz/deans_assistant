@@ -42,7 +42,7 @@ ss.get_initial_session_states()
 # 3. Set Links
 main_container = st.container(border=False)
 with main_container:
-    cc_links = st.columns(2)
+    cc_links = st.columns(3)
     with cc_links[0]:
         link_container1 = st.container(border=True)
         with link_container1:
@@ -71,3 +71,18 @@ with main_container:
             )
             with exp_admin:
                 st.markdown("Manage your assistant right from the app.")
+    with cc_links[2]:
+        link_container2 = st.container(border=True)
+        with link_container2:
+            link_history = st.page_link(
+                page="pages/3_Chat_History.py",
+                label="Chat History",
+                icon="💬"
+            )
+            exp_history = st.expander(
+                label="About",
+                expanded=False
+            )
+            with exp_history:
+                st.markdown("View your chat history.")
+    
