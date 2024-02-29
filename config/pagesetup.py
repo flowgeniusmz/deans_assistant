@@ -4,6 +4,7 @@ from streamlit_elements import elements, mui, html
 import hydralit_components as hc
 import extra_streamlit_components as stx
 from streamlit_extras.metric_cards import style_metric_cards
+from streamlit_extras.stylable_container import stylable_container
 
 ## 1. TITLE and SUBTITLE
 def set_title(varTitle, varSubtitle):
@@ -90,6 +91,17 @@ def get_metric_container(varMetrics):
          border_color="#0096D7",
          box_shadow=True
     )
+
+green_container = stylable_container(
+        key="container_with_border",
+        css_styles="""
+            {
+                border: 1px solid rgba(11, 140, 71, 0.62);
+                border-radius: 0.5rem;
+                padding: calc(1em - 1px)
+            }
+            """,
+        ):
 
   #"""
  #   Applies a custom style to st.metrics in the page
