@@ -49,6 +49,7 @@ def set_page_overview(varHeader, varText):
             """
             .stMarkdown {
                     padding-right: 1.5em;
+                    padding-left: 1.5em;
                 """]
         ):
                 set_blue_header(varHeader)
