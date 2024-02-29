@@ -64,7 +64,7 @@ ps.set_page_overview(
 # 2. Display
 main_container = st.container(border=True)
 with main_container:
-    green_container = stylable_container(
+    with stylable_container(
         key="container_with_border",
         css_styles="""
             {
