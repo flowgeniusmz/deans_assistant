@@ -92,17 +92,6 @@ def get_metric_container(varMetrics):
          box_shadow=True
     )
 
-green_container = stylable_container(
-        key="container_with_border",
-        css_styles="""
-            {
-                border: 1px solid rgba(11, 140, 71, 0.62);
-                border-radius: 0.5rem;
-                padding: calc(1em - 1px)
-            }
-            """,
-        ):
-
   #"""
  #   Applies a custom style to st.metrics in the page
 
