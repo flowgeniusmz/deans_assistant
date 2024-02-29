@@ -41,7 +41,7 @@ def set_page_overview(varHeader, varText):
             {
                 border: 1px solid rgba(11, 140, 71, 0.62);
                 border-radius: 0.5rem;
-                padding: calc(1em - 2px)
+                padding: calc(1em - 8px)
             }
             """,
         ):
