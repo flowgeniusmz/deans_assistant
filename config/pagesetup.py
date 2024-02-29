@@ -37,7 +37,7 @@ def get_pagelinks():
 def set_page_overview(varHeader, varText):
         with stylable_container(
         key="container_with_border",
-        css_styles="""
+        css_styles=["""
             {
                 border: 1px solid rgba(11, 140, 71, 0.7);
                 background-color: red;
@@ -46,6 +46,10 @@ def set_page_overview(varHeader, varText):
                 padding-right:1.5em;
             }
             """,
+            """
+            .stMarkdown {
+                    padding-right: 1.5em;
+                """]
         ):
                 set_blue_header(varHeader)
                 st.markdown(f"{varText}")
