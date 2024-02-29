@@ -64,44 +64,34 @@ ps.set_page_overview(
 # 2. Display
 main_container = st.container(border=True)
 with main_container:
-    with stylable_container(
-        key="container_with_border",
-        css_styles="""
-            {
-                border: 1px solid rgba(11, 140, 71, 0.62);
-                border-radius: 0.5rem;
-                padding: calc(1em - 1px)
-            }
-            """,
-        ):
-            ps.set_blue_header(varSubtitle="Basic Information")
-            details_container = st.container()
-            with details_container:
-                cc_details = st.columns(3)
-                with cc_details[0]:
-                    asst_name = st.text_input(
-                        label="Assistant Name",
-                        value=st.session_state.assistant_name,
-                        disabled=True
-                    )
-                with cc_details[1]:
-                    asst_model = st.text_input(
-                        label="Assistant Model",
-                        value=st.session_state.assistant_model,
-                        disabled=True
-                    )
-                with cc_details[2]:
-                    asst_desc = st.text_input(
-                        label="Assistant Description",
-                        value=st.session_state.assistant_description,
-                        disabled=True
-                    )
-                asst_inst = st.text_area(
-                    label="Assistant Instructions", 
-                    value=st.session_state.assistant_instructions,
-                    disabled=True,
-                    height=400 
-                )
+    ps.set_blue_header(varSubtitle="Basic Information")
+    details_container = st.container()
+    with details_container:
+        cc_details = st.columns(3)
+        with cc_details[0]:
+            asst_name = st.text_input(
+                label="Assistant Name",
+                value=st.session_state.assistant_name,
+                disabled=True
+            )
+        with cc_details[1]:
+            asst_model = st.text_input(
+                label="Assistant Model",
+                value=st.session_state.assistant_model,
+                disabled=True
+            )
+        with cc_details[2]:
+            asst_desc = st.text_input(
+                label="Assistant Description",
+                value=st.session_state.assistant_description,
+                disabled=True
+            )
+        asst_inst = st.text_area(
+            label="Assistant Instructions", 
+            value=st.session_state.assistant_instructions,
+            disabled=True,
+            height=400 
+        )
     ps.set_blue_header(varSubtitle="Details and Actions")
     tabs_container = st.container(border=True)
     with tabs_container:
