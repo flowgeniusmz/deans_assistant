@@ -40,9 +40,9 @@ def set_page_overview(varHeader, varText):
         css_styles="""
             {
                 border: 1px solid rgba(11, 140, 71, 0.2);
-                background-color: 1px solid rgba(148, 30, 91, 0.8);
+                background-color: red;
                 border-radius: 0.5rem;
-                padding: calc(0.1em - 10px)
+                padding: calc(0.2em - 10px)
             }
             """,
         ):
