@@ -57,16 +57,16 @@ def display_no_chat_history():
 # 4. Function to display error if Manage Assistant tab not visited first
 def display_error_chat_history():
     warning_container = st.container(border=False)
-        with warning_container: 
-            warning_message = st.warning(
-                body="**ERROR: Chat History Not Displayed:** You must first go to **Manage Assistant** page first before any chat history will be displayed. Please use the link below to go to **Manage Assistant** and then return back to **Chat History**. (Note: This is a temporary bug that will be resolved)",
-                icon="⚠️"
-            )
-            manage_page_link = st.page_link(
-                page="pages/2_Manage_Assistant.py",
-                label="Click here to go back to **Manage Assistant**",
-                icon="💬"
-            )
+    with warning_container: 
+        warning_message = st.warning(
+            body="**ERROR: Chat History Not Displayed:** You must first go to **Manage Assistant** page first before any chat history will be displayed. Please use the link below to go to **Manage Assistant** and then return back to **Chat History**. (Note: This is a temporary bug that will be resolved)",
+            icon="⚠️"
+        )
+        manage_page_link = st.page_link(
+            page="pages/2_Manage_Assistant.py",
+            label="Click here to go back to **Manage Assistant**",
+            icon="💬"
+        )
 
 # 5. Display Function for Chat History
 def chat_history_display():
