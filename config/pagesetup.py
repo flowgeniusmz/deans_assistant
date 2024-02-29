@@ -35,9 +35,19 @@ def get_pagelinks():
 
 ### 3. PAGE OVERVIEW
 def set_page_overview(varHeader, varText):
-        set_blue_header(varHeader)
-        st.markdown(f"{varText}")
-        st.divider()
+        with stylable_container(
+        key="container_with_border",
+        css_styles="""
+            {
+                border: 1px solid rgba(11, 140, 71, 0.62);
+                border-radius: 0.5rem;
+                padding: calc(1em - 1px)
+            }
+            """,
+        ):
+                set_blue_header(varHeader)
+                st.markdown(f"{varText}")
+                st.divider()
 
 ### 3. PAGE SECTION
 def set_page_section(varHeader, varText):
