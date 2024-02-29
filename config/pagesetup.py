@@ -40,7 +40,7 @@ def set_page_overview(varHeader, varText):
         css_styles=["""
             {
                 border: 1px solid rgba(11, 140, 71, 0.7);
-                background-color: red;
+                background-color: coral;
                 border-radius: 0.5rem;
                 padding: calc(0.2em - 10px);
                 padding-right:1.5em;
