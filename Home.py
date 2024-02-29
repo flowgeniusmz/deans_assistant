@@ -4,8 +4,8 @@ from config import pagesetup as ps
 from app import display_title as disTitle, session_states as ss
 from streamlit_extras.stylable_container import stylable_container
 
-with open( "config/style.css" ) as css:
-    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
+#with open( "config/style.css" ) as css:
+    #st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
 
 
