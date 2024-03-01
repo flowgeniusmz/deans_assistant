@@ -39,7 +39,7 @@ def set_page_overview(varHeader, varText):
         key="container_with_border",
         css_styles=["""
             {
-                border: 1px solid rgba(255, 255, 0, 0.7);
+                border: 1px solid rgba(115, 0, 0, 0.7);
                 background-color: white;
                 border-radius: 0.5rem;
                 padding: calc(0.2em - 10px);
