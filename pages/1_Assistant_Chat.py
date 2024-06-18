@@ -131,7 +131,7 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         if thread_message_run_id == st.session_state.run.id and thread_message_role == "assistant":
             thread_message_id = thread_message.id
             thread_message_unix = thread_message.created_at
-            thread_message_datetime = datetime.utcfromtimestamp(thread_message_unix)
+            thread_message_datetime = datetime.now()
             thread_message_text = thread_message.content[0].text
             thread_message_annotations = thread_message_text.annotations
             citations=[]
