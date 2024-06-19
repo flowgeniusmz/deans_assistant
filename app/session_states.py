@@ -5,7 +5,8 @@ import pandas as pd
 from datetime import datetime
 import time
 
-
+client = OpenAI(api_key=st.secrets.openai.api_key)
+assistant = client.beta.assistants.retrieve(assistant_id = st.secrets.openai.assistant_id)
 
 def get_initial_session_states():
     if "session_id" not in st.session_state:
@@ -20,13 +21,13 @@ def get_initial_session_states():
         st.session_state.openai_client = OpenAI(api_key=st.secrets.openai.api_key)
         st.session_state.openai_model = st.secrets.openai.model_gpt4_preview
     if "assistant" not in st.session_state:
-        st.session_state.assistant = st.session_state.openai_client.beta.assistants.retrieve(assistant_id=st.secrets.openai.assistant_id)
-        st.session_state.assistant_instructions = st.session_state.assistant.instructions
-        st.session_state.assistant_file_ids = st.session_state.assistant.file_ids
-        st.session_state.assistant_tools = st.session_state.assistant.tools
-        st.session_state.assistant_model = st.session_state.assistant.model
-        st.session_state.assistant_name = st.session_state.assistant.name
-        st.session_state.assistant_description = st.session_state.assistant.description
+        st.session_state.assistant = assistant
+        st.session_state.assistant_instructions = assistant.instructions
+        st.session_state.assistant_file_ids = assistant.tool_resources.file_search.vector_store_ids
+        st.session_state.assistant_tools = assistant.tools
+        st.session_state.assistant_model = assistant.model
+        st.session_state.assistant_name = assistant.name
+        st.session_state.assistant_description = assistant.description
     if "thread" not in st.session_state:
         st.session_state.thread = st.session_state.openai_client.beta.threads.create(
             metadata={'session_id': st.session_state.session_id,}
