@@ -29,6 +29,16 @@ st.set_page_config(
     initial_sidebar_state=app_sidebar
 )
 
+
+# Set St logo
+with open(st.secrets.paths.logo, "rb") as logofile:
+    logoimage = logofile.read()
+
+with open(st.secrets.paths.icon, "rb") as iconfile:
+    iconimage = iconfile.read()
+
+logo = st.logo(image=logoimage, icon_image=iconimage)
+
 ## (Set Page Title)
 disTitle.display_title_section(
     varTitle=page_title,
