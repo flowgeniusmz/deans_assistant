@@ -2,7 +2,6 @@ Pillow
 altair
 arxiv
 asyncio
-audio-recorder-streamlit
 bs4
 cloudscraper
 colorama

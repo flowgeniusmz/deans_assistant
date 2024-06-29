@@ -12,6 +12,9 @@ def display_title_section(varTitle: str, varSubtitle: str):
                 varSubtitle=varSubtitle
             )
         with title_columns[1]:
-            st.image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQroYsyWjvZmkyguxf2_XUKqcWTNLkZrRbPzPL8MU5I&s', caption='Plainfield School District 202') #Streamlit image for branding
+            with open(st.secrets.paths.logo, "rb") as logo:
+                image = logo.read()
+                st.image(image, caption="Plainfield School District", width=200)
+            #st.image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQroYsyWjvZmkyguxf2_XUKqcWTNLkZrRbPzPL8MU5I&s', caption='Plainfield School District 202') #Streamlit image for branding
         st.divider()
         
