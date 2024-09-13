@@ -6,6 +6,7 @@ from openai import OpenAI
 import time
 from datetime import datetime
 
+# Initialize session state if not present
 if "start_chat" not in st.session_state:
     ss.get_initial_session_states()
 
@@ -37,27 +38,76 @@ disTitle.display_title_section(
     varSubtitle=page_subtitle
 )
 
+# CSS for Message Styling
+st.markdown("""
+    <style>
+    .user-message {
+        text-align: right;
+        background-color: #4A90E2;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 5px;
+    }
+    .assistant-message {
+        text-align: left;
+        background-color: #7BACD2;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 5px;
+    }
+    .message-container {
+        display: flex;
+        flex-direction: column;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # Display Existing Messages in the chat
 chat_container = st.container()
 with chat_container:
     for message in st.session_state.messages:
         message_role = message["role"]
+        message_content = message["content"]
+        
         if message_role == "assistant":
             avatarpath = "assets/images/logo/icon.png"
-            
+            alignment_class = "assistant-message"
         elif message_role == "user":
             avatarpath = "assets/images/logo/school.png"
-            
+            alignment_class = "user-message"
+        else:
+            avatarpath = None
+            alignment_class = "assistant-message"  # Default alignment
 
-        message_content = message["content"]
-        with st.chat_message(name=message_role, avatar=avatarpath):
-            st.markdown(message_content)
+        # Display avatar and message
+        with st.container():
+            cols = st.columns([1, 8, 1])  # Adjust column widths as needed
+            if message_role == "assistant":
+                # Avatar on the left
+                with cols[0]:
+                    if avatarpath:
+                        st.image(avatarpath, width=40)
+                with cols[1]:
+                    st.markdown(f"<div class='{alignment_class}'>{message_content}</div>", unsafe_allow_html=True)
+            elif message_role == "user":
+                # Avatar on the right
+                with cols[1]:
+                    st.markdown(f"<div class='{alignment_class}'>{message_content}</div>", unsafe_allow_html=True)
+                with cols[2]:
+                    if avatarpath:
+                        st.image(avatarpath, width=40)
+            else:
+                # Default alignment
+                with cols[0]:
+                    if avatarpath:
+                        st.image(avatarpath, width=40)
+                with cols[1]:
+                    st.markdown(f"<div class='{alignment_class}'>{message_content}</div>", unsafe_allow_html=True)
 
 # Chat Input for the user
 if prompt := st.chat_input("Enter your question (Ex: A student has their third tardy. What consequences should be considered?)"):
     ta.toast_alert_start("Getting response...")
-    # add to st.session_state.messages
+    # Add to st.session_state.messages
     prompt_role = "user"
     prompt_content = prompt
     new_message = client.beta.threads.messages.create(
@@ -66,27 +116,35 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
         role=prompt_role
     )
 
+    # Append the user's message to the session state
+    prompt_message = {
+        "role": prompt_role,
+        "content": prompt_content,
+        "messageid": new_message.id,
+        "runid": st.session_state.run.id if "run" in st.session_state else None,
+        "createdatunix": new_message.created_at,
+        "createdatdatetime": datetime.utcfromtimestamp(new_message.created_at)
+    }
+    st.session_state.messages.append(prompt_message)
+
+    # Refresh the chat display
     with chat_container:
-        with st.chat_message(name=prompt_role, avatar="assets/images/logo/school.png"):
-            st.markdown(prompt_content)
-    
+        cols = st.columns([1, 8, 1])
+        with cols[1]:
+            st.markdown(f"<div class='user-message'>{prompt_content}</div>", unsafe_allow_html=True)
+        with cols[2]:
+            st.image("assets/images/logo/school.png", width=40)
+
     with chat_container:
-        status = st.status(
-        label="Initiating response...",
-        expanded=False,
-        state="running"
-        )
-    
+        status = st.empty()
+        status.info("Initiating response...")
+
     # Initiate a run with additional instructions
     st.session_state.run = client.beta.threads.runs.create(
         thread_id=st.session_state.thread_id,
         assistant_id=st.secrets.openai.assistant_id,
         instructions=st.session_state.run_instructions
     )
-
-    # Add to session state
-    prompt_message = {"role": prompt_role, "content": prompt_content, "messageid": new_message.id, "runid": st.session_state.run.id, "createdatunix": new_message.created_at, "createdatdatetime": datetime.utcfromtimestamp(new_message.created_at)}
-    st.session_state.messages.append(prompt_message)
 
     # Wait for run to complete
     while st.session_state.run.status != "completed":
@@ -97,17 +155,12 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
             run_id=st.session_state.run.id
         )
         with chat_container:
-            status.write(f"Checking response status...{st.session_state.run.status}")
+            status.info(f"Checking response status...{st.session_state.run.status}")
 
     with chat_container:
-        status.update(
-            label="Response recieved!",
-            expanded=False,
-            state="complete"
-        )
-
+        status.success("Response received!")
         ta.toast_alert_end("Response received!")
-    
+
     # Retrieve messages added by assistant
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id
@@ -140,9 +193,21 @@ if prompt := st.chat_input("Enter your question (Ex: A student has their third t
 
             thread_message_content_replace += '\n\n**Citations:**\n' + '\n'.join(citations)
             
-            add_thread_message = {"role": thread_message_role, "content": thread_message_content_replace, "messageid": thread_message_id, "runid": thread_message_run_id, "createdatunix": thread_message_unix, "createdatdatetime": thread_message_datetime}
+            add_thread_message = {
+                "role": thread_message_role,
+                "content": thread_message_content_replace,
+                "messageid": thread_message_id,
+                "runid": thread_message_run_id,
+                "createdatunix": thread_message_unix,
+                "createdatdatetime": thread_message_datetime
+            }
             st.session_state.messages.append(add_thread_message)
 
+            # Refresh the chat display with assistant's message
             with chat_container:
-                with st.chat_message(name="assistant", avatar="assets/images/logo/icon.png"):
-                    st.markdown(thread_message_content_replace)
+                cols = st.columns([1, 8, 1])
+                with cols[0]:
+                    st.image("assets/images/logo/icon.png", width=40)
+                with cols[1]:
+                    st.markdown(f"<div class='assistant-message'>{thread_message_content_replace}</div>", unsafe_allow_html=True)
+

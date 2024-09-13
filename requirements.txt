@@ -6,7 +6,6 @@ bs4
 cloudscraper
 colorama
 extra-streamlit-components
-faiss-cpu
 gtts
 html2text
 hydralit
@@ -27,15 +26,10 @@ opencv-python-headless
 pandas
 pandass
 plotly
-plotly.express
-pubmed
-pyautogen
-pydub
 pygwalker
 python-dateutil
 python-pptx
 requests
-scikit-learn==1.2.1
 scrapy
 serpapi
 simple_salesforce
