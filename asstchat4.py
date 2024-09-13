@@ -5,15 +5,12 @@ from app import display_title as disTitle, session_states as ss
 from openai import OpenAI
 import time
 from datetime import datetime
-from typing import List, Dict, Any, Literal
+from typing import List, Dict, Any
 import base64
 
 # Constants
 ASSISTANT_AVATAR = "assets/images/logo/icon.png"
 USER_AVATAR = "assets/images/logo/school.png"
-
-
-
 
 # Initialize Session State
 if "start_chat" not in st.session_state:
